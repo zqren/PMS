@@ -1,7 +1,7 @@
 <template>
   <div class="shop-container">
       <page-title title="艾兰得商城">
-        <div slot="search" class="shop-search">
+        <!-- <div slot="search" class="shop-search">
            <van-search
                 background="#FFF"
                 v-model="result"
@@ -10,11 +10,10 @@
                 >
                 <div slot="action" @click="onSearch" class="shop-cart">搜索</div>
             </van-search>
-        </div>
+        </div> -->
       </page-title>
-     
       <div class="shop-list">
-        <router-link tag="div" :to="{name:'goods',query:{goodsId:item.id}}" class="list" v-for="(item,index) in shopList" :key="index">
+        <div  class="list" v-for="(item,index) in shopList" :key="index">
             <div class="list-item">
                 <img class="pic" v-lazy="item.pic" />
             </div>
@@ -26,7 +25,13 @@
                 <span class="price">￥{{item.price}}</span>
                 <span class="score">兑换积分{{item.score}}</span>
             </div>
-        </router-link>
+        </div>
+      </div>
+      <div class="download-app">
+        <div class="text">更多优惠登陆APP商城查看</div>
+        <div @click="downloadAPP" class="btn-box">
+            <div class="btn">立即下载</div>
+        </div>
       </div>
   </div>
 </template>
@@ -91,6 +96,9 @@ export default {
         this.$router.push({
             name:"cart"
         })
+      },
+      downloadAPP(){
+        location.href="http://jzmx.alandgroup.com:8080/download/index.html"
       }
   }
 }
@@ -177,6 +185,40 @@ export default {
                 }
             }
         }  
+        .download-app{
+        position: fixed;
+        left: 0rem;
+        bottom: 0rem;
+        width: 100%;
+        background: rgba(0,0,0,.4);
+        height: 2.2rem;
+        line-height: 2.2rem;
+        padding: 0 .5rem;
+        box-sizing: border-box;
+        z-index: 999;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .text{
+            flex-basis: 70%;
+            color: #fff;
+            font-size: .8rem;
+        }
+        .btn-box{
+            flex-basis:30%;
+            .btn{
+                width: 80%;
+                height: 80%;
+                margin: 10% auto;
+                background: linear-gradient(to right,#66cc33,#79d62a);
+                border-radius: 6px;
+                color: #fff;
+                font-size: .7rem;
+                text-align: center;
+                line-height: 1.76rem;
+            } 
+        }
+    }
     }
 </style>
 

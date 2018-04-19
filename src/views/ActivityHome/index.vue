@@ -172,7 +172,6 @@ export default {
         ...mapGetters(['userInfo'])
     },
     created(){
-        this.getHomeInfo()
         this.$store.dispatch('getLoadState',false)
     },
     mounted(){
@@ -201,6 +200,8 @@ export default {
                 this.$router.push({
                     name:path
                 })
+            }else{
+                location.href="http://jzmx.alandgroup.com:8080/download/index.html"
             }
         },
         changeView(name){
@@ -220,7 +221,7 @@ export default {
             },25)
         },
         downloadAPP(){
-           
+           location.href="http://jzmx.alandgroup.com:8080/download/index.html"
         }
     }
 }
