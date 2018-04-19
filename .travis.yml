@@ -15,7 +15,7 @@ before_install:
 after_script:
   - cd ./dist
   - git init
-  - git config user.name "zlvin"
+  - git config user.name "zqren"
   - git config user.email "lxrcshik@sina.com"
   - git add .
   - git commit -m "TravisCI"
