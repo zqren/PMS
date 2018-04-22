@@ -6,7 +6,7 @@
             </page-title>
             <van-swipe :autoplay="3000">
                 <van-swipe-item v-for="(image, index) in swiperImgList" :key="index">
-                    <img class="swiper-pic" v-lazy="image.PhotoPath" />
+                    <img class="swiper-pic" :src="image.PhotoPath  | filterPic" />
                 </van-swipe-item>
             </van-swipe>
             <div class="menu-list">
@@ -47,17 +47,15 @@ import pageTitle from '@/components/pageTitle'
 import dynamic from '@/components/signDynamic'
 import winner from '@/components/winList/'
 import history from '@/components/historyList'
+import formatDate from '@/utils/formatDate'
+
 import {mapGetters} from 'vuex'
 
 export default {
     name:"home",
     data(){
         return{
-            swiperImgList:[{
-                PhotoPath:"http://pic.sc.chinaz.com/files/pic/pic9/201804/bpic6465.jpg"
-            },{
-                PhotoPath:"http://pic.sc.chinaz.com/files/pic/pic9/201803/zzpic11048.jpg"
-            }],
+            swiperImgList:[],
             menuList:[{
                 menu:"appli",
                 icon:"icon-appli",
@@ -80,71 +78,8 @@ export default {
                 text:"往期花絮"
             }],
             currentView:"dynamic",
-            dynamics:[{
-                pic:"http://pic.sc.chinaz.com/files/pic/pic9/201803/zzpic11048.jpg",
-                name:"张三",
-                title:"中餐",
-                time:"2018-04-10 12:30:32"
-            }, {
-                pic:"http://pic.sc.chinaz.com/files/pic/pic9/201803/zzpic11048.jpg",
-                name:"张三",
-                title:"中餐",
-                time:"2018-04-10 12:30:32"
-            },{
-                pic:"http://pic.sc.chinaz.com/files/pic/pic9/201803/zzpic11048.jpg",
-                name:"张三",
-                title:"中餐",
-                time:"2018-04-10 12:30:32"
-            },{
-                pic:"http://pic.sc.chinaz.com/files/pic/pic9/201803/zzpic11048.jpg",
-                name:"张三",
-                title:"中餐",
-                time:"2018-04-10 12:30:32"
-            },{
-                pic:"http://pic.sc.chinaz.com/files/pic/pic9/201803/zzpic11048.jpg",
-                name:"张三",
-                title:"中餐",
-                time:"2018-04-10 12:30:32"
-            }],
-            winners:[{
-                title:"JZ180203组第3周冠军",
-                pic:"http://pic.sc.chinaz.com/files/pic/pic9/201804/bpic6465.jpg",
-                name:"张三",
-                mul:4.2,
-                total:10.4
-            },
-            {
-                title:"JZ180203组第3周冠军",
-                pic:"http://pic.sc.chinaz.com/files/pic/pic9/201804/bpic6465.jpg",
-                name:"张三",
-                mul:4.2,
-                total:10.4
-            },
-            {
-                title:"JZ180203组第3周冠军",
-                pic:"http://pic.sc.chinaz.com/files/pic/pic9/201804/bpic6465.jpg",
-                name:"张三",
-                mul:4.2,
-                total:10.4
-            },{
-                title:"JZ180203组第3周冠军",
-                pic:"http://pic.sc.chinaz.com/files/pic/pic9/201804/bpic6465.jpg",
-                name:"张三",
-                mul:4.2,
-                total:10.4
-            },{
-                title:"JZ180203组第3周冠军",
-                pic:"http://pic.sc.chinaz.com/files/pic/pic9/201804/bpic6465.jpg",
-                name:"张三",
-                mul:4.2,
-                total:10.4
-            },{
-                title:"JZ180203组第3周冠军",
-                pic:"http://pic.sc.chinaz.com/files/pic/pic9/201804/bpic6465.jpg",
-                name:"张三",
-                mul:4.2,
-                total:10.4
-            }],
+            dynamics:[],
+            winners:[],
             history:[{
                 pic:"http://pic.sc.chinaz.com/files/pic/pic9/201804/bpic6465.jpg"
             },{
@@ -173,25 +108,46 @@ export default {
     },
     created(){
         this.$store.dispatch('getLoadState',false)
-    },
-    mounted(){
-        this.tabOffsetTop = this.$refs.homeTab.offsetTop
+        this.getHomeInfo()
     },
     methods:{
         getHomeInfo(){
-            this.$http.get('/api/Menu/SelectMenuByUserId',{
-                params:{
-                    PageID:"SelectMenuByUserId",
-                    UserID:0
-                }
-            }).then(res=>{
+            this.$http.get('/api/Menu/SelectMenuByUserId?strquery={"PageID":"SelectMenuByUserId","UserID":"0"}')
+            .then(res=>{
                 if(res.data.success){
-                    this.$set(this.$data,'swiperImgList',res.data.ds.AlandInfoList)
+                   this.$set(this.$data,'swiperImgList',res.data.ds.AlandInfoList)
+                   this.getUserClock()
+                   this.getAward()
                 }
+            }).catch(err=>{
+                console.log(err)
+            })
+        },
+        getUserClock(){
+            let date = JSON.stringify(formatDate(new Date(),"yyyy-MM-dd"))
+            this.$http.get(`/api/UserClock/SelectUserClockListByDate?strquery={"PageID":"SelectUserClockListByDate","Date":${date}}`)
+            .then(res=>{
+                this.$set(this.$data,"dynamics",res.data.objectData)
+                this.tabOffsetTop = this.swiperImgList.length?this.$refs.homeTab.offsetTop:0
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+        },
+        getAward(){
+            this.$http.get('/api/Award/GetAwardList?strquery={"PageID":"GetAwardList"}')
+            .then(res=>{
+                this.$set(this.$data,"winners",res.data.rows)
+            })
+            .catch(err=>{
+                console.log(err)
             })
         },
         getScrollTop(e){
+            console.log(this.tabOffsetTop)
+
             this.homeScrolltop = e.target.scrollTop
+            console.log( this.homeScrolltop)
             this.tabFixed =(e.target.scrollTop>=this.tabOffsetTop)? true:false
             this.viewStyle = (e.target.scrollTop>=this.tabOffsetTop)? true:false
         },
@@ -236,6 +192,7 @@ export default {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     background: #f5f5f5;
+    padding-bottom:3rem; 
     .home-top{
         width: 100%;
         height: auto;

@@ -1,29 +1,25 @@
 <template>
   <div class="shop-container">
-      <page-title title="艾兰得商城">
-        <!-- <div slot="search" class="shop-search">
-           <van-search
-                background="#FFF"
-                v-model="result"
-                show-action
-                @search="onSearch"
-                >
-                <div slot="action" @click="onSearch" class="shop-cart">搜索</div>
-            </van-search>
-        </div> -->
-      </page-title>
-      <div class="shop-list">
-        <div  class="list" v-for="(item,index) in shopList" :key="index">
-            <div class="list-item">
-                <img class="pic" v-lazy="item.pic" />
-            </div>
-            <div class="list-name">
-                <p>{{item.name}}</p>
-                <p v-if="item.subName">{{item.subName}}</p>
-            </div>
-            <div class="list-money">
-                <span class="price">￥{{item.price}}</span>
-                <span class="score">兑换积分{{item.score}}</span>
+      <page-title title="艾兰得商城"></page-title>
+      <div class="shop-detail">
+        <van-swipe :autoplay="3000">
+            <van-swipe-item v-for="(image, index) in swiperImgList" :key="index">
+                <img class="swiper-pic" :src="image.PhotoPath  | filterPic" />
+            </van-swipe-item>
+        </van-swipe>
+        <div class="shop-list">
+            <div @click="viewDetail" class="list" v-for="(item,index) in shopList" :key="index">
+                <div class="list-item">
+                    <img class="pic" v-lazy="item.pic" />
+                </div>
+                <div class="list-name">
+                    <p>{{item.name}}</p>
+                    <p v-if="item.subName">{{item.subName}}</p>
+                </div>
+                <div class="list-money">
+                    <span class="price">￥{{item.price}}</span>
+                    <span class="score">兑换积分{{item.score}}</span>
+                </div>
             </div>
         </div>
       </div>
@@ -37,11 +33,13 @@
 </template>
 <script>
 import pageTitle from '@/components/pageTitle'
+import { Dialog } from "vant"
+
 export default {
   name:"shop",
   data(){
       return{
-        result:"",
+        swiperImgList:[],
         shopList:[{
             pic:"http://pic.sc.chinaz.com/files/pic/pic9/201804/bpic6465.jpg",
             name:"维生素C含片",
@@ -81,25 +79,35 @@ export default {
       }
   },
   components:{
-      pageTitle
+      pageTitle,
+      Dialog
   },
   created(){
-    this.$store.dispatch('getLoadState',false)
+    this.getHomeInfo()
   },
   methods:{
-      onSearch(){
-        this.$router.push({
-            name:"weightReduce"
+    getHomeInfo(){
+        this.$http.get('/api/Menu/SelectMenuByUserId?strquery={"PageID":"SelectMenuByUserId","UserID":"0"}')
+        .then(res=>{
+            if(res.data.success){
+                this.$set(this.$data,'swiperImgList',res.data.ds.AlandInfoList)
+                this.$store.dispatch('getLoadState',false)
+            }
+        }).catch(err=>{
+            console.log(err)
         })
-      },
-      viewCart(){
-        this.$router.push({
-            name:"cart"
-        })
-      },
-      downloadAPP(){
+    },
+    downloadAPP(){
         location.href="http://jzmx.alandgroup.com:8080/download/index.html"
-      }
+    },
+    viewDetail(){
+        Dialog.confirm({
+            title: '提示',
+            message: '是否去APP商城购买？'
+        }).then(() => {
+           location.href="http://jzmx.alandgroup.com:8080/download/index.html"
+        })
+    }
   }
 }
 </script>
@@ -112,75 +120,68 @@ export default {
          position: absolute;
          top: 0;
         left: 0;
-       .shop-search{
-            width: 92%;
-            height: 2.25rem;
-            box-sizing: border-box;
-            position: absolute;
-            top: 0;
-            .shop-cart{
-                width: 2rem;
-                text-align: center;
-                color: #75d142;
-                font-size: .8rem;
-            }
-        }
-        .shop-list{
-            @val:5.5rem;
+        .shop-detail{
+            @val:4.5rem;
             width: 100%;
             height: calc(~"100% - @{val}");
             background: #ddd;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            .list{
-                flex-basis: 49.8%;
-                background: #fff;
-                height: 12.05rem;
-                margin-bottom: 1px;
-                padding:1.25rem .8rem;
+            .swiper-pic{
+                height: 10rem; 
+            }
+            .shop-list{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                padding-bottom: 2.5rem;
                 box-sizing: border-box;
-                .list-item{
-                    width: 4.8rem;
-                    height: 6rem;
-                    margin: 0 auto;
-                    .pic{
-                        width: 100%;
-                        height: 100%;
-                        display: inline-block;
-                        vertical-align: middle;
-                    }
-                }
-                .list-name{
-                    width: 100%;
-                    height: 2.75rem;
+                .list{
+                    flex-basis: 49.8%;
+                    background: #fff;
+                    height: 12.05rem;
+                    margin-bottom: 1px;
+                    padding:1.25rem .8rem;
                     box-sizing: border-box;
-                    text-align: center;
-                    font-size: .7rem;
-                    color: #000;
-                    font-weight: 400;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                }
-                .list-money{
-                    width: 100%;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    color: .6rem;
-                    .price{
-                        flex-basis: 40%;
-                        color: #7bd349;
+                    .list-item{
+                        width: 4.8rem;
+                        height: 6rem;
+                        margin: 0 auto;
+                        .pic{
+                            width: 100%;
+                            height: 100%;
+                            display: inline-block;
+                            vertical-align: middle;
+                        }
                     }
-                    .score{
-                        flex-basis: 60%;
-                        text-align: right;
-                        color: #ffd822;
+                    .list-name{
+                        width: 100%;
+                        height: 2.75rem;
+                        box-sizing: border-box;
+                        text-align: center;
+                        font-size: .7rem;
+                        color: #000;
+                        font-weight: 400;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    .list-money{
+                        width: 100%;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        .price{
+                            flex-basis: 40%;
+                            color: #7bd349;
+                        }
+                        .score{
+                            flex-basis: 60%;
+                            text-align: right;
+                            color: #ffd822;
+                        }
                     }
                 }
             }

@@ -6,6 +6,7 @@ import router from './router'
 import store from './store'
 import http from './http'
 import Mask from './plugins/xMask/index.js'
+import filterPic from './filters/filterPic'
 
 Vue.prototype.$http = http
 Vue.use(Mask)
@@ -62,6 +63,10 @@ import { Field } from 'vant';
 
 Vue.use(Field);
 
+//全局过滤器
+Vue.filter("filterPic",(val)=>{
+  return filterPic(val)
+})
 
 router.beforeEach((to,from,next)=>{
   store.dispatch("getLoadState",false);

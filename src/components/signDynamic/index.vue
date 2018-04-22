@@ -3,14 +3,14 @@
     <div class="dynamic-list" v-for="(item,index) in dynamicList" :key="index">
       <div class="left-pic" :class="{'source-home':source=='home','source-student':source=='student'}">
         <div class="pic-conatiner">
-          <img v-lazy="item.pic"/>
+          <img :src="item.LitImg | filterPic"/>
         </div>
-        <div class="pic-name">{{item.name}}</div>
+        <div class="pic-name">{{item.UserName}}</div>
       </div>
       <div class="right-content">
-        <p v-if="source=='home'" class="title">完成【{{item.title}}】打开</p>
+        <p v-if="source=='home'" class="title">完成【{{item.infoName}}】打卡</p>
         <p v-if="source=='student'" class="title">【{{item.title}}】体测数据</p>
-        <p class="time">{{item.time}}</p>
+        <p class="time">{{item.Time}}</p>
       </div>
     </div>
   </div>
@@ -39,8 +39,9 @@ export default {
 <style lang="less" scoped>
   .sign-dynamic{
     width: 100%;
-    @val:1.75rem;
-    height:calc(~"100% - @{val}");
+    // @val:1.75rem;
+    // height:calc(~"100% - @{val}");
+    height: auto;
     background: #fff;
     padding: 0 .8rem;
     box-sizing: border-box;

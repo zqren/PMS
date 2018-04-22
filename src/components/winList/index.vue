@@ -1,17 +1,17 @@
 <template>
   <div class="winner-list" :class="{'list-view':viewScroll}">
     <div class="winner-card" v-for="(item,index) in winnerList" :key="index">
-      <p class="winner-title">{{item.title}}</p>
+      <p class="winner-title">{{item.ClassName}}班第{{item.Week}}周{{item.InfoName}}({{item.Sex}}子组)</p>
       <div class="winner-content">
         <div class="content-pic">
           <div class="pic-container">
-            <img :src="item.pic"/>
+            <img v-if="item.LitImg" :src="item.LitImg | filterPic"/>
           </div>
         </div>
         <div class="content-detail">
-            <p class="name">{{item.name}}</p>
-            <p class="mul">本周减重{item.mul{}}斤</p>
-            <p class="totalMul">累计减重{{item.total}}斤</p>
+            <p class="name">{{item.UserName}}</p>
+            <p class="mul">本周减重{{item.LostWeightAbs}}}斤</p>
+            <p class="totalMul">累计减重{{item.SumLostWeightAbs}}斤</p>
           </div>
       </div>
     </div>
@@ -76,6 +76,7 @@ export default {
             width: 3.5rem;
             height: 3.5rem;
             border-radius: 4px;
+            background: #abaab8;
             overflow: hidden;
             img{
               width: 100%;

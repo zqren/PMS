@@ -36,7 +36,7 @@ export default {
 <style lang="less" scoped>
     .page-title{
         width: 100%;
-        height: 5.5rem;
+        height: 4.5rem;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;

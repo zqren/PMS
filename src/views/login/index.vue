@@ -78,10 +78,10 @@
         }
       },
       loginAccount() {
-        this.$http.post('/api/User/Login', {
-          Telephone: this.telphone,
-          Password: this.password
-        }).then(res => {
+        let param = new FormData()
+        param.append("Telephone",this.telphone)
+        param.append("Password",this.password)
+        this.$http.post('/api/User/Login', param).then(res => {
           if (res.data.success) {
             this.getUserInfo(res.data.rows)
             this.router.replace({
